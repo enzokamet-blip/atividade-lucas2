@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabela Ranked Global</title>
+  
+  <!-- CONECTA O STYLE.CSS NA RANKED -->
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Animação do Brilho Dourado Pulsante para o Top 1 */
+    @keyframes goldGlow {
+      0% {
+        box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.4), 0 0 10px rgba(255, 215, 0, 0.4);
+        border-color: #ffd700;
+      }
+      50% {
+        box-shadow: inset 0 0 25px rgba(255, 215, 0, 0.9), 0 0 20px rgba(255, 215, 0, 0.8);
+        border-color: #fff59d;
+      }
+      100% {
+        box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.4), 0 0 10px rgba(255, 215, 0, 0.4);
+        border-color: #ffd700;
+      }
+    }
+
+    /* Linha especial do #1 Global */
+    tr.top-1-row {
+      background: linear-gradient(90deg, #2b1d07 0%, #1c100d 100%) !important;
+      animation: goldGlow 2s infinite ease-in-out;
+      border: 2px solid #ffd700 !important;
+      font-weight: bold;
+    }
+
+    .crown-icon {
+      margin-right: 6px;
+      font-size: 1.1rem;
+      filter: drop-shadow(0 0 5px #ffd700);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🏆 RANKED GLOBAL ORGÂNICA</h1>
+    <p class="subtitle">Top 1.000 maiores produtores de biomassa da história</p>
+
+    <div class="controls">
+      <input type="text" id="searchInput" class="search-box" placeholder="Buscar jogador..." oninput="filtrarJogadores()">
+      <button class="my-pos-btn" onclick="irParaMinhaPosicao()">📍 Ver Minha Posição</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th># Pos</th>
+          <th>Jogador</th>
+          <th>Idade</th>
+          <th>Rank</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboard">
+        <!-- Preenchido dinamicamente pelo JS -->
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <button id="prevBtn" class="page-btn" onclick="mudarPagina(-1)">◀ Anterior</button>
+      <span id="pageIndicator" style="color: #bcaaa4; font-size: 0.9rem;">Página 1</span>
+      <button id="nextBtn" class="page-btn" onclick="mudarPagina(1)">Próxima ▶</button>
+    </div>
+
+    <a href="index.html" class="btn-back">🔄 Voltar para a Calculadora</a>
+  </div>
+
+  <script>
+    const PREFIXOS = ["Mestre", "Lord", "Doutor", "Rei", "Capitão", "Sombra", "Ninja", "Supremo", "Anão", "Cyber", "Mega", "Vampiro", "Guerreiro", "Pro", "Lendário"];
+    const SUFIXOS = ["DasFeijoadas", "DoEsterco", "Indigestor", "DoLixo", "Salgado", "DaLama", "Atomic", "Destroyer", "3000", "SemFreio", "DoPantanal", "Dark", "Gramer", "Zero"];
+
+    function gerarRankPorIdade(age) {
+      if (age < 5) return "INICIANTE";
+      if (age < 15) return "APRENDIZ";
+      if (age < 30) return "EXPERT";
+      if (age < 60) return "LENDÁRIO";
+      if (age < 80) return "MÍTICO";
+      if (age < 100) return "DIVINO";
+      if (age < 120) return "HACKER";
+      if (age < 200) return "GOD";
+      if (age < 670) return "SECRETO [REDACTED]";
+      if (age < 1000) return "ENTIDADE ANCESTRAL";
+      return "O FIM DOS TEMPOS";
+    }
+
+    // 🔊 Função para tocar a vinheta de vitória 8-bit sem depender de arquivos externos
+    function tocarSomVitoria() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const notas = [
+          { freq: 523.25, duration: 0.15 }, // C5
+          { freq: 659.25, duration: 0.15 }, // E5
+          { freq: 783.99, duration: 0.15 }, // G5
+          { freq: 1046.50, duration: 0.40 } // C6 (Sustentado)
+        ];
+
+        let tempoInicio = audioCtx.currentTime;
+
+        notas.forEach(nota => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(nota.freq, tempoInicio);
+
+          gain.gain.setValueAtTime(0.3, tempoInicio);
+          gain.gain.exponentialRampToValueAtTime(0.001, tempoInicio + nota.duration);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start(tempoInicio);
+          osc.stop(tempoInicio + nota.duration);
+
+          tempoInicio += nota.duration;
+        });
+      } catch (e) {
+        console.log("Áudio aguardando interação do usuário.");
+      }
+    }
+
+    // 1. Criar 999 bots aleatórios
+    let listaJogadores = [];
+
+    for (let i = 0; i < 999; i++) {
+      const pref = PREFIXOS[Math.floor(Math.random() * PREFIXOS.length)];
+      const suf = SUFIXOS[Math.floor(Math.random() * SUFIXOS.length)];
+      const nick = `${pref}_${suf}_${Math.floor(Math.random() * 99)}`;
+
+      let age;
+      const rand = Math.random();
+      if (rand < 0.002) age = Math.floor(Math.random() * 500) + 1000;
+      else if (rand < 0.01) age = Math.floor(Math.random() * 300) + 670;
+      else if (rand < 0.03) age = Math.floor(Math.random() * 400) + 200;
+      else if (rand < 0.1) age = Math.floor(Math.random() * 100) + 100;
+      else age = Math.floor(Math.random() * 80) + 1;
+
+      listaJogadores.push({
+        name: nick,
+        age: age,
+        rank: gerarRankPorIdade(age),
+        points: age * 100,
+        isUser: false
+      });
+    }
+
+    // 2. Incluir o jogador real salvo no localStorage
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+      const user = JSON.parse(savedUser);
+      listaJogadores.push({
+        name: user.name + " (VOCÊ)",
+        age: user.age,
+        rank: user.rank,
+        points: user.points,
+        isUser: true
+      });
+    }
+
+    // 3. Ordenar do maior pro menor pontuação
+    listaJogadores.sort((a, b) => b.points - a.points);
+    listaJogadores.forEach((player, idx) => player.posicaoGlobal = idx + 1);
+
+    // 🏆 Se o jogador do localStorage for o #1, tenta tocar o som ao carregar
+    const top1Player = listaJogadores[0];
+    if (top1Player && top1Player.isUser) {
+      window.addEventListener('load', () => {
+        tocarSomVitoria();
+      });
+    }
+
+    // Controle de Paginação e Filtros
+    let listaFiltrada = [...listaJogadores];
+    let paginaAtual = 1;
+    const itensPorPagina = 20;
+
+    function renderizarTabela() {
+      const tbody = document.getElementById('leaderboard');
+      tbody.innerHTML = '';
+
+      const inicio = (paginaAtual - 1) * itensPorPagina;
+      const fim = inicio + itensPorPagina;
+      const paginaItens = listaFiltrada.slice(inicio, fim);
+
+      paginaItens.forEach(player => {
+        const row = document.createElement('tr');
+
+        // Destaque para o usuário e para o Top 1 Global
+        if (player.isUser) row.classList.add('user-row');
+        if (player.posicaoGlobal === 1) row.classList.add('top-1-row');
+
+        let posClass = "";
+        let crown = "";
+
+        if (player.posicaoGlobal === 1) {
+          posClass = "top-1";
+          crown = "👑 ";
+        } else if (player.posicaoGlobal === 2) {
+          posClass = "top-2";
+        } else if (player.posicaoGlobal === 3) {
+          posClass = "top-3";
+        }
+
+        row.innerHTML = `
+          <td class="${posClass}">#${player.posicaoGlobal}</td>
+          <td><span class="crown-icon">${crown}</span>${player.name}</td>
+          <td>${player.age} anos</td>
+          <td>${player.rank}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      const totalPaginas = Math.ceil(listaFiltrada.length / itensPorPagina) || 1;
+      document.getElementById('pageIndicator').innerText = `Página ${paginaAtual} de ${totalPaginas}`;
+      document.getElementById('prevBtn').disabled = paginaAtual === 1;
+      document.getElementById('nextBtn').disabled = paginaAtual >= totalPaginas;
+    }
+
+    function mudarPagina(delta) {
+      paginaAtual += delta;
+      renderizarTabela();
+    }
+
+    function filtrarJogadores() {
+      const termo = document.getElementById('searchInput').value.toLowerCase();
+      listaFiltrada = listaJogadores.filter(p => p.name.toLowerCase().includes(termo));
+      paginaAtual = 1;
+      renderizarTabela();
+    }
+
+    function irParaMinhaPosicao() {
+      const userIndex = listaJogadores.findIndex(p => p.isUser);
+      if (userIndex !== -1) {
+        document.getElementById('searchInput').value = '';
+        listaFiltrada = [...listaJogadores];
+        paginaAtual = Math.floor(userIndex / itensPorPagina) + 1;
+        renderizarTabela();
+
+        // Se for o Top 1 e clicar para ver a posição, garante o som de vitória
+        if (userIndex === 0) {
+          tocarSomVitoria();
+        }
+      } else {
+        alert("Você ainda não calculou seu Rank na página anterior!");
+      }
+    }
+
+    // Inicialização
+    renderizarTabela();
+  </script>
+
+</body>
+</html>

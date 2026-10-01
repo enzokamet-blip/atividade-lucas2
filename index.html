@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora Orgânica: Ranked</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #0d0807;
+      color: #f4e8e1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: #1c100d;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.95);
+      max-width: 540px;
+      width: 100%;
+      text-align: center;
+      border: 1px solid #3d1b15;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+      color: #ffcc80;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      color: #bcaaa4;
+      text-align: left;
+    }
+
+    input[type="text"], input[type="date"] {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #3d1b15;
+      background-color: #0d0807;
+      color: #fff;
+      font-size: 1rem;
+      margin-bottom: 20px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #ff9800;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #b71c1c;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    button:hover {
+      background-color: #d32f2f;
+    }
+
+    .result {
+      margin-top: 25px;
+      padding: 18px;
+      background-color: #0d0807;
+      border-radius: 6px;
+      border-left: 5px solid #b71c1c;
+      display: none;
+      text-align: left;
+    }
+
+    .result p {
+      font-size: 1.05rem;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .highlight {
+      color: #ff9800;
+      font-weight: bold;
+    }
+
+    .rank-title {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #8d6e63;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .equivalence {
+      font-size: 1.2rem;
+      color: #fff;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    .dev-comment {
+      font-style: italic;
+      color: #ff8a80;
+      font-size: 0.95rem;
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 1px dashed #3d1b15;
+    }
+
+    /* Caixa da Pergunta para Desafio */
+    .challenge-box {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #1a0f0d;
+      border: 1px solid #ff9800;
+      border-radius: 8px;
+      text-align: center;
+      display: none;
+    }
+
+    .challenge-box h3 {
+      color: #ffcc80;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .btn-yes {
+      background-color: #ff9800;
+      color: #0d0807;
+    }
+
+    .btn-yes:hover {
+      background-color: #f57c00;
+    }
+
+    .btn-no {
+      background-color: #33221f;
+      color: #bcaaa4;
+    }
+
+    .btn-no:hover {
+      background-color: #442d29;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Medidor Orgânico Supremo</h1>
+    
+    <label for="username">Seu Nickname de Jogador:</label>
+    <input type="text" id="username" placeholder="Ex: MestreDasFeijoadas">
+
+    <label for="birthdate">Sua data de nascimento:</label>
+    <input type="date" id="birthdate">
+
+    <button onclick="calcularEscala()">Revelar Meu Rank Orgânico</button>
+
+    <div class="result" id="resultBox">
+      <p>Sua idade: <span class="highlight" id="ageYears">0</span> anos (<span class="highlight" id="daysCount">0</span> dias de existência).</p>
+      <div class="rank-title" id="rankBadge">RANK: APRENDIZ</div>
+      <div class="equivalence" id="equivalenceText"></div>
+      <div class="dev-comment" id="commentText"></div>
+
+      <!-- PERGUNTA PARA ENTRAR NA RANKED -->
+      <div class="challenge-box" id="challengeBox">
+        <h3>⚔️ Quer competir na Ranked Global com outros jogadores?</h3>
+        <div class="btn-group">
+          <button class="btn-yes" onclick="aceitarDesafio()">SIM, QUERO COMPETIR!</button>
+          <button class="btn-no" onclick="recusarDesafio()">NÃO, SOU FRACO</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let dadosJogador = {};
+
+    function calcularEscala() {
+      const usernameInput = document.getElementById('username').value.trim() || "Anônimo Indigestor";
+      const birthdateInput = document.getElementById('birthdate').value;
+
+      if (!birthdateInput) {
+        alert("Preencha a data primeiro!");
+        return;
+      }
+
+      const birthDate = new Date(birthdateInput);
+      const today = new Date();
+
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+
+      const diffTime = Math.abs(today - birthDate);
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+      let rank = "";
+      let mensagem = "";
+      let comentario = "";
+      let corBorda = "#b71c1c";
+      let pontosPower = age * 100;
+
+      if (age < 5) {
+        rank = "INICIANTE";
+        mensagem = "50 kg de sujeira de hamster doméstico.";
+        comentario = "Nota do sistema: Tá só começando na caminhada.";
+      } else if (age < 15) {
+        rank = "APRENDIZ";
+        mensagem = "1.000 kg de fezes de gato caçador de quintal.";
+        comentario = "Nota do sistema: Dá pra limpar em um final de semana.";
+      } else if (age < 30) {
+        rank = "EXPERT";
+        mensagem = "200.000 kg de fezes de vaca com disenteria grave.";
+        comentario = "Nota do sistema: O cheiro já começa a atravessar continentes.";
+      } else if (age < 60) {
+        rank = "LENDÁRIO";
+        mensagem = "500 TONELADAS (500.000 kg) de fezes de dragão cuspindo fogo!";
+        comentario = "Nota do sistema: Nem os bombeiros apagam esse desastre.";
+        corBorda = "#ff9800";
+      } else if (age < 80) {
+        rank = "MÍTICO";
+        mensagem = "10.000 TONELADAS de dejetos do Kraken das profundezas do oceano.";
+        comentario = "Nota do sistema: Os biólogos marinhos já desistiram.";
+        corBorda = "#9c27b0";
+      } else if (age < 100) {
+        rank = "DIVINO";
+        mensagem = "500.000 TONELADAS de matéria orgânica expelida por deuses do Olimpo.";
+        comentario = "Nota do sistema: Uma oferenda de proporções catastróficas.";
+        corBorda = "#ffd700";
+      } else if (age < 120) {
+        rank = "HACKER";
+        mensagem = "1.000.000 TERABYTES de esterco puro codificado na matriz da realidade.";
+        comentario = "Nota do sistema: Deu bug no banco de dados.";
+        corBorda = "#00e676";
+      } else if (age < 200) {
+        rank = "GOD";
+        mensagem = "INFINITAS TONELADAS de dejetos cósmicos que criam buracos negros.";
+        comentario = "Nota do sistema: O tecido do universo tá rasgando.";
+        corBorda = "#ff1744";
+      } else if (age < 670) {
+        rank = "SECRETO [REDACTED]";
+        mensagem = "Sua existência transcendeu o espaço-tempo e alterou as leis da física.";
+        comentario = "Nota do sistema: Como você chegou nessa data?";
+        corBorda = "#00e5ff";
+      } else if (age < 1000) {
+        rank = "ENTIDADE ANCESTRAL";
+        mensagem = "850.000.000 TONELADAS de lama primordial acumulada desde a Idade Média.";
+        comentario = "caralho eu nem sabia que dava pra isso acontecer...";
+        corBorda = "#e040fb";
+      } else {
+        rank = "O FIM DOS TEMPOS";
+        mensagem = "A BIOMASSA UNIVERSAL COMPLETA. O planeta inteiro virou uma grande montanha indigesta.";
+        comentario = "eu desisto do meu emprego é muita merda pra medir.";
+        corBorda = "#ffffff";
+      }
+
+      document.getElementById('ageYears').innerText = age;
+      document.getElementById('daysCount').innerText = diffDays.toLocaleString('pt-BR');
+      document.getElementById('rankBadge').innerText = "RANK: " + rank;
+      document.getElementById('equivalenceText').innerText = mensagem;
+      document.getElementById('commentText').innerText = comentario;
+
+      const resultBox = document.getElementById('resultBox');
+      resultBox.style.borderLeftColor = corBorda;
+      resultBox.style.display = 'block';
+
+      // Mostra a caixa do desafio
+      document.getElementById('challengeBox').style.display = 'block';
+
+      // Salva em memória
+      dadosJogador = {
+        name: usernameInput,
+        age: age,
+        rank: rank,
+        points: pontosPower
+      };
+    }
+
+    function aceitarDesafio() {
+      localStorage.setItem('currentUser', JSON.stringify(dadosJogador));
+      window.location.href = 'ranked.html';
+    }
+
+    function recusarDesafio() {
+      alert("Compreensível... Nem todo mundo aguenta o peso da Ranked seu noob betinha sem aura.");
+      document.getElementById('challengeBox').style.display = 'none';
+    }
+  </script>
+
+</body>
+</html>

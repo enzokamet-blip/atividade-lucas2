@@ -1,0 +1,186 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #0d0807;
+  color: #f4e8e1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  background-color: #1c100d;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.95);
+  max-width: 750px;
+  width: 100%;
+  text-align: center;
+  border: 1px solid #3d1b15;
+}
+
+h1 {
+  font-size: 1.8rem;
+  margin-bottom: 5px;
+  color: #ff9800;
+}
+
+p.subtitle {
+  color: #bcaaa4;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+/* --- ESTILOS DE CONTROLE E FORMULÁRIOS --- */
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.search-box, input[type="text"], input[type="number"], select {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #3d1b15;
+  background-color: #0d0807;
+  color: #fff;
+  outline: none;
+  font-size: 0.95rem;
+}
+
+.search-box:focus, input:focus, select:focus {
+  border-color: #ff9800;
+}
+
+/* --- BOTÕES --- */
+.my-pos-btn, .btn-action {
+  padding: 10px 15px;
+  background-color: #00e5ff;
+  color: #0d0807;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.2s;
+}
+
+.my-pos-btn:hover, .btn-action:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-back {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #b71c1c;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.btn-back:hover {
+  background-color: #d32f2f;
+}
+
+/* --- TABELA RANKED --- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+th {
+  background-color: #2b1713;
+  color: #ffcc80;
+  padding: 12px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid #3d1b15;
+}
+
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #2b1713;
+  font-size: 0.9rem;
+}
+
+tr.user-row {
+  background-color: #3d1b15;
+  font-weight: bold;
+  color: #00e5ff;
+  border: 2px solid #00e5ff;
+}
+
+.top-1 { color: #ffd700; font-weight: bold; }
+.top-2 { color: #c0c0c0; font-weight: bold; }
+.top-3 { color: #cd7f32; font-weight: bold; }
+
+/* Animação do Brilho Dourado Pulsante para o Top 1 */
+@keyframes goldGlow {
+  0% {
+    box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.4), 0 0 10px rgba(255, 215, 0, 0.4);
+    border-color: #ffd700;
+  }
+  50% {
+    box-shadow: inset 0 0 25px rgba(255, 215, 0, 0.9), 0 0 20px rgba(255, 215, 0, 0.8);
+    border-color: #fff59d;
+  }
+  100% {
+    box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.4), 0 0 10px rgba(255, 215, 0, 0.4);
+    border-color: #ffd700;
+  }
+}
+
+tr.top-1-row {
+  background: linear-gradient(90deg, #2b1d07 0%, #1c100d 100%) !important;
+  animation: goldGlow 2s infinite ease-in-out;
+  border: 2px solid #ffd700 !important;
+  font-weight: bold;
+}
+
+.crown-icon {
+  margin-right: 6px;
+  font-size: 1.1rem;
+  filter: drop-shadow(0 0 5px #ffd700);
+}
+
+/* --- PAGINAÇÃO --- */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.page-btn {
+  padding: 8px 16px;
+  background-color: #3d1b15;
+  color: #fff;
+  border: 1px solid #ff9800;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: #3d1b15;
+}
